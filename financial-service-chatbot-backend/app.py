@@ -51,6 +51,29 @@ def chat():
         else:
             message = generated
 
+
+        # Sources Dictionary  
+        sources = {
+            "credit default swap" : "Investopedia - Credit Default Swap",
+            "phishing" : "Investopedia - Phishing",
+            "fraud": "Investopedia - Financial Fraud", 
+        }
+
+        # Query 
+        query = data['messages'][-1]['content'].lower()
+
+        source = "General Knowledge" 
+
+
+        for key in sources:
+            if key in query:
+                source = sources[key]
+                break
+
+        # Adding the source
+        message = message + "\nSource: " + source
+
+
         # Returning the response
         return jsonify({"message": message})
     except Exception as e:
