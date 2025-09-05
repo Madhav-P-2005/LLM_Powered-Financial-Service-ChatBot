@@ -121,3 +121,10 @@ pip install transformers torch -> done
 
 
 
+npm create vite@latest . -- --template react
+
+npm install 
+
+npm run dev
+
+npm i -D tailwindcss @tailwindcss/vite
