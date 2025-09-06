@@ -1,7 +1,3 @@
-/* Path :- financial-service-chatbot-frontend\src\App.css */
-
 /* Clean App.css - Let Tailwind CSS handle all styling */
 
-/* Only keep essential styles that don't conflict with Tailwind */
-
-/* Remove all default Vite/React styles that conflict with our Tailwind layout */
+/* Remove all default styles that conflict with Tailwind */
