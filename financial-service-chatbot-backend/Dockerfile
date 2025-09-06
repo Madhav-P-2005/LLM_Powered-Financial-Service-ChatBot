@@ -25,4 +25,5 @@ COPY . /app
 EXPOSE 8000
 
 # Start the app with gunicorn, binding to the PORT env var
-CMD ["bash","-lc","gunicorn -w 2 -b 0.0.0.0:${PORT} app:app"]
+# Use 1 worker with threads to reduce memory pressure on free plans
+CMD ["bash","-lc","gunicorn -w 1 -k gthread --threads 8 --timeout 120 -b 0.0.0.0:${PORT} app:app"]

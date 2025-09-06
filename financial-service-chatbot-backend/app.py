@@ -199,6 +199,11 @@ def chat():
         })
 
 
+@app.route('/', methods=['GET'])
+def health():
+    """Simple health check endpoint for Railway/Vercel probes."""
+    return jsonify({"status": "ok"}), 200
+
 # Running the app
 if __name__ == "__main__":
          app.run(debug=True)
