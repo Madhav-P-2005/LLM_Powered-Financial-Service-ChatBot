@@ -2,4 +2,14 @@
 
 financial-service-chatbot-backend/MyEnvironment
 
+financial-service-chatbot-backend/config/.env
+
+# Ignore the node_modules
+
+financial-service-chatbot-backend/node_modules
+
+
+# Ignore the __pycache__
+**/__pycache__/
+*.pyc
 
