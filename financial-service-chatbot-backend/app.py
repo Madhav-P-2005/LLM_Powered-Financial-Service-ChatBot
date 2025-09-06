@@ -23,6 +23,7 @@ app = Flask(__name__)
 CORS(app , resources={r"/*": {"origins": [
     "http://localhost:5173",
     "https://madhavp-financial-service-chatbot.vercel.app",
+    "https://madhavp-finsathi-chatbot.vercel.app",
 ]}})
 
 # OpenAI client (expects OPENAI_API_KEY in environment)
