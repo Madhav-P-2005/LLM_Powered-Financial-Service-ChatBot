@@ -19,7 +19,11 @@ load_dotenv('config/.env')
 # Creating the Flask app
 app = Flask(__name__)
 
-CORS(app , resources={r"/*": {"origins": "http://localhost:5173"}})
+# Allow local dev and deployed frontend on Vercel
+CORS(app , resources={r"/*": {"origins": [
+    "http://localhost:5173",
+    "https://madhavp-financial-service-chatbot.vercel.app",
+]}})
 
 # OpenAI client (expects OPENAI_API_KEY in environment)
 if not os.getenv("OPENAI_API_KEY"):
