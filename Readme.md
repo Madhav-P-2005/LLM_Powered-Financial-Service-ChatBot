@@ -7,6 +7,7 @@
 ![OpenAI API](https://img.shields.io/badge/OpenAI-API-412991?logo=openai&logoColor=white&style=for-the-badge)
 
 A simple, responsive financial services chatbot that answers queries like:
+
 - “What is a phishing scam?”
 - “Explain credit default swap in simple terms.”
 - “How can I secure my online banking?”
@@ -14,9 +15,10 @@ A simple, responsive financial services chatbot that answers queries like:
 The bot replies in clear bullet points and includes a “Source:” link for citation (bonus requirement).
 
 ### 🚀 Live App
-- Frontend (Vercel/Netlify): [link-here]
-- Backend (Render/Railway): [link-here]
-- GitHub Repo: [link-here]
+
+- Frontend (Vercel): [finsathi-chatbot-madhavp.vercel.app](https://finsathi-chatbot-madhavp.vercel.app)
+- Backend (Render): [madhavp-financial-service-backend.onrender.com](https://madhavp-financial-service-backend.onrender.com)
+- GitHub Repo: [Madhav-P-2005/LLM_Powered-Financial-Service-ChatBot](https://github.com/Madhav-P-2005/LLM_Powered-Financial-Service-ChatBot)
 
 ## ✨ Features
 
@@ -28,6 +30,7 @@ The bot replies in clear bullet points and includes a “Source:” link for cit
 - 🧹 “Clear chat” and “Home” buttons on chat page
 - 📱 Fully responsive UI (mobile-first)
 - 🔒 OpenAI key loaded securely from backend `.env` (never exposed to browser)
+- 🧩 Custom favicon and branding (`public/finsathi.svg`) replacing default Vite icon
 
 ## 🧠 How It Works
 
@@ -62,6 +65,7 @@ LLM-Powered Financial Services Chatbot/
 ## 🚀 Quick Start (Local)
 
 ### Prerequisites
+
 - Node.js (LTS) and npm
 - Python 3.11+ (venv recommended)
 
@@ -70,23 +74,27 @@ LLM-Powered Financial Services Chatbot/
 From: `financial-service-chatbot-backend/`
 
 - Create and activate venv (Windows PowerShell):
+
 ```powershell
 python -m venv MyEnvironment
 ./MyEnvironment/Scripts/Activate.ps1
 ```
 
 - Install dependencies:
+
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
 - Configure environment: Create `config/.env` with:
+
 ```env
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
 OPENAI_MODEL=gpt-4o-mini
 ```
 
 - Run Flask:
+
 ```powershell
 $Env:FLASK_APP = "app.py"
 $Env:FLASK_ENV = "development"
@@ -100,11 +108,13 @@ Backend runs at: http://127.0.0.1:5000
 From: `financial-service-chatbot-frontend/`
 
 - Install:
+
 ```bash
 npm install
 ```
 
 - Run dev:
+
 ```bash
 npm run dev
 ```
@@ -112,9 +122,10 @@ npm run dev
 Frontend runs at: http://localhost:5173
 
 Open the app, go to “Chat” and ask:
+
 - What is a credit default swap?
 - What is a bank?
-You should get 3–6 bullet points and a “Source:” URL.
+  You should get 3–6 bullet points and a “Source:” URL.
 
 ## 🔧 Technologies & Key Dependencies
 
@@ -125,6 +136,7 @@ You should get 3–6 bullet points and a “Source:” URL.
 - OpenAI Python SDK
 
 Backend `requirements.txt` (core):
+
 - Flask, flask-cors
 - openai
 - python-dotenv
@@ -134,24 +146,31 @@ Backend `requirements.txt` (core):
 ## 🔐 Environment Variables
 
 Backend: `financial-service-chatbot-backend/config/.env`
+
 ```env
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
 OPENAI_MODEL=gpt-4o-mini
 ```
+
 Do not commit `.env`. It is already gitignored.
 
 ## 🔗 API Contract
 
 Endpoint:
+
 - POST `/chat`
 - Request JSON:
+
 ```json
 { "message": "What is a credit default swap?" }
 ```
+
 - Response JSON:
+
 ```json
 { "response": "- • Short, simple bullet points...\n- ...\nSource: https://..." }
 ```
+
 CORS is configured to allow `http://localhost:5173` in development.
 
 ## 📦 Deployment
@@ -164,21 +183,27 @@ CORS is configured to allow `http://localhost:5173` in development.
   - `OPENAI_API_KEY`
   - `OPENAI_MODEL` (optional; default `gpt-4o-mini`)
 - Start command:
+
 ```bash
 gunicorn app:app
 ```
+
 - After deploy, note your backend URL (e.g., `https://your-backend.onrender.com`).
 
 ### Frontend (Vercel / Netlify)
 
 - Build command:
+
 ```bash
 npm run build
 ```
+
 - Publish directory:
+
 ```bash
 dist
 ```
+
 - Ensure your frontend Axios points to your backend URL for production (if needed, add an env or simple conditional).
 
 ### Update Links
@@ -212,7 +237,7 @@ PRs and suggestions welcome. Open an issue for bugs or improvements.
 
 ## 🪪 License
 
-MIT License. See LICENSE if included.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
