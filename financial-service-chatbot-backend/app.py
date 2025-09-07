@@ -1,37 +1,47 @@
-# Importing the required libraries
+"""
+Flask API for the Financial Services Chatbot.
 
-from flask import request,jsonify
+Responsibilities :- 
+- Serve a POST /chat endpoint that first tries curated answers, then falls back to OpenAI.
+- Always append a reliable "Source:" link (validated Investopedia URL or search page).
+- Enable CORS for local dev and the deployed Vercel frontend.
+- Expose GET / health endpoint for uptime checks.
 
+"""
+
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-
-from flask import Flask 
-
 from dotenv import load_dotenv
-
 from openai import OpenAI
 
 import os
 import re
+import requests
+from urllib.parse import quote_plus
+
 
 # Loading the environment variables
 load_dotenv('config/.env')
 
-# Creating the Flask app
+# Initialize the Flask app
 app = Flask(__name__)
 
+
 # Allow local dev and deployed frontend on Vercel
-CORS(app , resources={r"/*": {"origins": [
+CORS(app, resources={r"/*": {"origins": [
     "http://localhost:5173",
     "https://madhavp-financial-service-chatbot.vercel.app",
-    "https://madhavp-finsathi-chatbot.vercel.app",
+    "https://finsathi-chatbot-madhavp.vercel.app",
 ]}})
+
 
 # OpenAI client (expects OPENAI_API_KEY in environment)
 if not os.getenv("OPENAI_API_KEY"):
     raise RuntimeError("OPENAI_API_KEY not found. Please set it in config/.env or environment.")
 client = OpenAI()
 
-# Curated FAQ with citations (keyword -> (title, answer, source_url))
+
+# Curated topics with trusted citations for predictable questions
 CURATED_KB = [
     {
         "keywords": ["credit card", "creditcards", "card limit", "annual fee"],
@@ -100,7 +110,9 @@ CURATED_KB = [
 ]
 
 
-def curated_answer(user_message: str):
+
+# Function to get a curated answer for a user query
+def get_curated_answer(user_message: str):
     q = user_message.lower()
     for item in CURATED_KB:
         if any(k in q for k in item["keywords"]):
@@ -109,25 +121,84 @@ def curated_answer(user_message: str):
     return None
 
 
-def investopedia_url_guess(user_message: str) -> str:
-    """Heuristically map a term to an Investopedia URL (best-effort)."""
+# Function to guess the Investopedia URL for a user query
+def guess_investopedia_url(user_message: str) -> str:
+    """
+    Heuristically map a term to an Investopedia URL (best-effort).
+
+    This is not guaranteed to exist; caller should validate with a HEAD request
+    before returning to the user.
+
+    """
     # pick a keyword-like token
     q = user_message.lower()
+
     # simple noun-ish extraction: take last meaningful word
     tokens = re.findall(r"[a-zA-Z][a-zA-Z\- ]+", q)
+
     if not tokens:
         return "https://www.investopedia.com/"
+
     phrase = tokens[-1].strip()
     slug = re.sub(r"[^a-z0-9\- ]", "", phrase.lower()).strip()
     slug = re.sub(r"\s+", "-", slug)
     first = slug[0] if slug else 'a'
     return f"https://www.investopedia.com/terms/{first}/{slug}.asp"
 
-# Creating the OpenAI client
-# client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 
-# Defining the route for the chatbot
+
+# Function to check if a URL exists
+def _url_exists(url: str, timeout: int = 3) -> bool:
+    try:
+         r = requests.head(url, allow_redirects=True, timeout=timeout)
+
+         return r.status_code < 400
+    except Exception:
+        return False
+
+
+# OpenAI client
+CANONICAL_INVESTOPEDIA = {
+
+    "credit default swap" : "https://www.investopedia.com/terms/c/creditdefaultswap.asp",
+    "credit card" : "https://www.investopedia.com/terms/c/creditcard.asp",
+    "bank" : "https://www.investopedia.com/terms/b/bank.asp",
+    "phishing" : "https://www.investopedia.com/terms/p/phishing.asp",
+    "credit score" : "https://www.investopedia.com/terms/c/credit_score.asp",
+    "emi" : "https://www.investopedia.com/terms/e/equated-monthly-installment-emi.asp",
+}
+
+
+# Function to build the source link for the response
+def build_investopedia_source_link(query: str) -> str:
+    """
+    Return the best-effort Investopedia URL for a user query.
+
+    Priority :- 
+    1) Canonical curated mapping
+    2) Heuristic guess (validated)
+    3) Investopedia search (never 404s)
+
+    """
+
+    # If canonical mapping exists, return it
+    q = query.lower()
+    for key, url in CANONICAL_INVESTOPEDIA.items():
+        if key in q:
+            return url
+    
+    # If canonical mapping fails, try heuristic guess
+    guessed = guess_investopedia_url(query)
+    if guessed and _url_exists(guessed):
+        return guessed
+
+    # If all else fails, return a search URL
+    return f"https://www.investopedia.com/search.asp?q={quote_plus(query)}"
+
+
+
+# Routes
 @app.route('/chat', methods=['POST'])
 def chat():
 
@@ -141,7 +212,7 @@ def chat():
             return jsonify({"error": "No message provided"}), 400
 
         # First try curated knowledge for higher quality + citation
-        curated = curated_answer(user_message)
+        curated = get_curated_answer(user_message)
         if curated:
             return jsonify({"response": curated})
 
@@ -163,31 +234,10 @@ def chat():
         )
         message = chat.choices[0].message.content.strip()
 
-        # Getting the response
-        # response = model(conv)
-
-        # Sources Dictionary  
-        sources = {
-            "credit default swap" : "Investopedia - Credit Default Swap",
-            "phishing" : "Investopedia - Phishing",
-            "fraud": "Investopedia - Financial Fraud", 
-        }
-
-        # Query 
-        query = user_message.lower()
-
-        source = "General Knowledge" 
-
-
-        for key in sources:
-            if key in query:
-                source = sources[key]
-                break
-
-        # If the model didn't produce a Source line, append a best-effort one
+        # If the model didn't produce a Source line, append a best-effort URL
         if "Source:" not in message:
-            guessed = investopedia_url_guess(user_message)
-            message = message + f"\nSource: {source if source != 'General Knowledge' else guessed}"
+            source_url = build_investopedia_source_link(user_message)
+            message = message + f"\nSource: {source_url}"
 
 
         # Returning the response
@@ -195,14 +245,20 @@ def chat():
     except Exception as e:
 
         # Returning the error
-        return jsonify({
-            "error" : str(e) 
-        })
+        return jsonify({"error": str(e)}), 500
 
 
+# Health Check Endpoint
 @app.route('/', methods=['GET'])
 def health():
-    """Simple health check endpoint for Railway/Vercel probes."""
+
+    """
+    Simple health check endpoint for Railway/Vercel probes.
+    
+    Returns :- 
+    - JSON response with status "ok" and HTTP status code 200.
+
+    """
     return jsonify({"status": "ok"}), 200
 
 # Running the app
