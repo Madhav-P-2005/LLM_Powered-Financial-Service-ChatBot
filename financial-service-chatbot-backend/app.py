@@ -30,7 +30,6 @@ app = Flask(__name__)
 # Allow local dev and deployed frontend on Vercel
 CORS(app, resources={r"/*": {"origins": [
     "http://localhost:5173",
-    "https://madhavp-financial-service-chatbot.vercel.app",
     "https://finsathi-chatbot-madhavp.vercel.app",
 ]}})
 
