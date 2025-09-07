@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="FinSathi AI">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <!-- Bot head -->
+  <rect x="96" y="120" width="320" height="240" rx="36" ry="36" fill="url(#g)"/>
+  <!-- Antenna -->
+  <circle cx="256" cy="92" r="18" fill="#06B6D4"/>
+  <rect x="248" y="100" width="16" height="24" rx="8" fill="#06B6D4"/>
+  <!-- Eyes -->
+  <circle cx="192" cy="220" r="22" fill="#fff"/>
+  <circle cx="320" cy="220" r="22" fill="#fff"/>
+  <circle cx="192" cy="220" r="10" fill="#0EA5E9"/>
+  <circle cx="320" cy="220" r="10" fill="#0EA5E9"/>
+  <!-- Mouth/display -->
+  <rect x="160" y="276" width="192" height="40" rx="20" fill="#111827" opacity="0.9"/>
+  <!-- Sparkles -->
+  <path d="M116 156l8 16 16 8-16 8-8 16-8-16-16-8 16-8 8-16z" fill="#FDE047"/>
+  <path d="M388 156l6 12 12 6-12 6-6 12-6-12-12-6 12-6 6-12z" fill="#FDE047"/>
+</svg>
