@@ -6,15 +6,18 @@
 ![Flask 3.x](https://img.shields.io/badge/Flask-3.x-000000?logo=flask&logoColor=white&style=for-the-badge)
 ![OpenAI API](https://img.shields.io/badge/OpenAI-API-412991?logo=openai&logoColor=white&style=for-the-badge)
 
-A simple, responsive financial services chatbot that answers queries like:
+An intelligent, responsive financial services chatbot that provides accurate answers with reliable source citations. Features advanced URL generation for Investopedia resources and comprehensive financial knowledge coverage.
 
-- “What is a phishing scam?”
-- “Explain credit default swap in simple terms.”
-- “How can I secure my online banking?”
+**Example queries:**
 
-The bot replies in clear bullet points and includes a “Source:” link for citation (bonus requirement).
+- "What is cryptocurrency?"
+- "Explain credit default swap in simple terms"
+- "How does compound interest work?"
+- "What are the risks of trading stocks?"
 
-### 🚀 Live App
+The bot provides clear, concise explanations and **always includes valid Investopedia source links** for further reading.
+
+## 🚀 Live App
 
 - Frontend (Vercel): [finsathi-chatbot-madhavp.vercel.app](https://finsathi-chatbot-madhavp.vercel.app)
 - Backend (Render): [madhavp-financial-service-backend.onrender.com](https://madhavp-financial-service-backend.onrender.com)
@@ -25,22 +28,30 @@ The bot replies in clear bullet points and includes a “Source:” link for cit
 - 🗨️ Conversational chat UI with history
 - ⏳ Loading indicator while the model generates
 - 📚 Answers in simple financial language
-- 🔗 Always appends “Source:” with a reputable link (Investopedia/OpenAI-provided)
+- 🔗 **Smart URL Generation**: Always provides valid Investopedia links using:
+  - Canonical URL mappings for 200+ financial terms
+  - Heuristic URL generation with validation
+  - Alphabetical directory fallback system
 - 🌓 Dark/Light theme (auto-applies based on saved or system preference)
-- 🧹 “Clear chat” and “Home” buttons on chat page
+- 🧹 "Clear chat" and "Home" buttons on chat page
 - 📱 Fully responsive UI (mobile-first)
 - 🔒 OpenAI key loaded securely from backend `.env` (never exposed to browser)
 - 🧩 Custom favicon and branding (`public/finsathi.svg`) replacing default Vite icon
 
 ## 🧠 How It Works
 
-- Curated knowledge first: Common topics like “credit default swap”, “bank”, “phishing”, “credit score”, “EMI” return high-quality, bullet-point answers with Investopedia citations from a curated knowledge base in `financial-service-chatbot-backend/app.py`.
-- OpenAI fallback: For other queries, the backend calls OpenAI (Chat Completions). The prompt enforces concise bullets and a final “Source:” line.
-- Safety net: If the model forgets the “Source:”, the backend appends a best-effort Investopedia URL guess.
+- **Curated Knowledge First**: Common topics like "cryptocurrency", "credit default swap", "bank", "phishing" return high-quality answers with verified Investopedia citations from a curated knowledge base.
+- **OpenAI Fallback**: For other queries, the backend calls OpenAI with optimized prompts for concise, educational responses.
+- **Advanced URL Resolution**: Multi-tier system ensures valid Investopedia links:
+  1. Exact canonical mapping lookup
+  2. Partial matching with priority scoring
+  3. Heuristic URL generation with validation
+  4. Alphabetical directory fallback
+- **No Broken Links**: System validates URLs before returning them to users.
 
 ## 🗂️ Project Structure
 
-```
+```text
 LLM-Powered Financial Services Chatbot/
 ├── financial-service-chatbot-backend/
 │   ├── app.py                  # Flask API (curated KB + OpenAI fallback)
@@ -101,7 +112,7 @@ $Env:FLASK_ENV = "development"
 flask run --host 127.0.0.1 --port 5000
 ```
 
-Backend runs at: http://127.0.0.1:5000
+Backend runs at: <http://127.0.0.1:5000>
 
 ### 2) Frontend (Vite + React)
 
@@ -119,13 +130,15 @@ npm install
 npm run dev
 ```
 
-Frontend runs at: http://localhost:5173
+Frontend runs at: <http://localhost:5173>
 
-Open the app, go to “Chat” and ask:
+Open the app, go to "Chat" and ask:
 
 - What is a credit default swap?
+- What is cryptocurrency?
 - What is a bank?
-  You should get 3–6 bullet points and a “Source:” URL.
+
+You should get clear explanations with valid Investopedia source URLs.
 
 ## 🔧 Technologies & Key Dependencies
 
@@ -141,7 +154,6 @@ Backend `requirements.txt` (core):
 - openai
 - python-dotenv
 - requests
-- (Optional legacy: transformers, torch; can be removed if not using local HF models)
 
 ## 🔐 Environment Variables
 
@@ -171,11 +183,11 @@ Endpoint:
 { "response": "- • Short, simple bullet points...\n- ...\nSource: https://..." }
 ```
 
-CORS is configured to allow `http://localhost:5173` in development.
+CORS is configured for local development and production deployment.
 
 ## 📦 Deployment
 
-### Backend (Render / Railway)
+### Backend (Render)
 
 - Push repo to GitHub.
 - Create a new Web Service.
@@ -205,31 +217,6 @@ dist
 ```
 
 - Ensure your frontend Axios points to your backend URL for production (if needed, add an env or simple conditional).
-
-### Update Links
-
-- Replace Live links at the top of this README.
-
-## 🧪 Testing Scenarios
-
-- “What is a credit default swap?” → curated bullets + Investopedia link.
-- “What is a phishing scam?” → curated bullets + Investopedia link.
-- “How can I secure my online banking?” → OpenAI fallback bullets + Source line.
-- “What is a bank?” → curated bullets + Investopedia link.
-- Network/Key errors → graceful frontend message.
-
-## 🛣️ Roadmap
-
-- Add more curated topics:
-  - APR vs APY, Debit vs Credit Card, Mutual Funds vs ETFs, KYC/AML.
-- Optional: rate limiting and logging middleware on backend.
-- Optional: message persistence (localStorage or server).
-
-## 📚 Learnings
-
-- Curated-first approach ensures consistent, high-quality, cited answers for expected queries.
-- OpenAI fallback broadens coverage while enforcing a “Source:” line via prompt and backend guard.
-- Frontend keeps messages readable with `whitespace-pre-line` and a clean, responsive UI.
 
 ## 🤝 Contributing
 
