@@ -104,12 +104,20 @@ def ensure_source_in_response(message: str, query: str) -> str:
     Returns:
         The response text with a guaranteed Source line.
     """
-    # Check if the model already added a Source line
-    source_match = re.search(r"(?im)^\s*Source:\s*", message)
+    # Check if the model already added a REAL Source URL (must contain https://)
+    real_source = re.search(r"(?im)^\s*Source:\s*(https?://\S+)", message)
 
-    if source_match:
-        # Model provided a source — keep it as-is
+    if real_source:
+        # Model provided a real URL — keep it as-is
         return message
+    
+    # ── Check for fake/placeholder source lines ─────────────────────
+    # LLMs sometimes output: "Source: [Investopedia URL for stocks]"
+    # These need to be replaced with actual URLs from our canonical dictionary
+    fake_source = re.search(r"(?im)^\s*Source:.*$", message)
+    if fake_source:
+        # Strip the placeholder source line
+        message = message[:fake_source.start()].rstrip()
     
     # ── Smarter check: Should we force a source? ────────────────────
     # Don't force a source if:
