@@ -54,7 +54,7 @@ SYSTEM_PROMPT = (
 # ──────────────────────────────────────────────────────────────────────
 
 hf_client = None               # Will be initialized below if token exists
-HF_MODEL = "mistralai/Mistral-7B-Instruct-v0.2"   # Open-source model (v0.2 is deployed on HF free inference)
+HF_MODEL = "Qwen/Qwen2.5-7B-Instruct"   # Open-source model (confirmed on HF Inference Providers free tier)
 
 if os.getenv("HF_API_TOKEN"):
     try:

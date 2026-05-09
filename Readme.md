@@ -35,7 +35,7 @@ Every answer includes **valid Investopedia source links** for further reading.
 
 - 🗨️ **Conversational Chat UI** — Real-time chat with message history and auto-scroll
 - 📚 **Curated Knowledge Base** — Instant, hand-written answers for high-traffic topics (no API call needed)
-- 🤖 **Mistral-7B LLM** — Powered by HuggingFace's free Inference API (Mistral-7B-Instruct-v0.2)
+- 🤖 **Qwen2.5-7B LLM** — Powered by HuggingFace's free Inference API (Qwen2.5-7B-Instruct)
 - 🔄 **OpenAI Fallback** — Automatic fallback to OpenAI (gpt-4o-mini) if HuggingFace is down
 - 🔗 **Smart Citations** — 200+ verified Investopedia URLs with multi-tier fallback resolution
 - ⚡ **Retry Button** — Failed messages show a styled retry button for better UX
@@ -61,7 +61,7 @@ User Question
         │ Not found
         ▼
 ┌────────────────────┐
-│  HuggingFace       │ ──→ FREE (Mistral-7B-Instruct-v0.2)
+│  HuggingFace       │ ──→ FREE (Qwen2.5-7B-Instruct)
 │  (Primary)         │     With retry + exponential backoff
 └───────┬────────────┘
         │ Failed / rate-limited
@@ -278,7 +278,7 @@ GET /
 {
   "status": "ok",
   "providers": {
-    "huggingface": { "configured": true, "model": "mistralai/Mistral-7B-Instruct-v0.2", "role": "primary (free)" },
+    "huggingface": { "configured": true, "model": "Qwen/Qwen2.5-7B-Instruct", "role": "primary (free)" },
     "openai": { "configured": false, "model": "gpt-4o-mini", "role": "fallback (paid)" }
   }
 }
