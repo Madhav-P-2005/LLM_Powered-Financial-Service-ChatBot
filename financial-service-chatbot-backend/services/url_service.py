@@ -125,10 +125,18 @@ def ensure_source_in_response(message: str, query: str) -> str:
     # 2. The query is just a greeting or help request
     # 3. The message doesn't have bullet points
     
-    q = query.lower()
-    is_greeting = any(word in q for word in ["hi", "hello", "hey", "how are you", "help me"])
+    q = query.lower().strip()
+    words = q.split()
     
-    if is_greeting and len(q) < 30:
+    # Only treat as greeting if it's a SHORT, pure greeting (max 5 words)
+    # e.g., "hi" or "hello how are you" — NOT "hi what are stocks?"
+    is_pure_greeting = len(words) <= 5 and any(
+        word in ["hi", "hello", "hey"] for word in words
+    ) and not any(
+        word in q for word in ["what", "how", "explain", "tell", "stock", "bond", "credit", "loan", "fund"]
+    )
+    
+    if is_pure_greeting:
         return message
 
     if "•" in message and len(message) > 100:
