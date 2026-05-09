@@ -104,27 +104,29 @@ def ensure_source_in_response(message: str, query: str) -> str:
     Returns:
         The response text with a guaranteed Source line.
     """
-    # Check if the model already added a REAL Source URL (must contain https://)
-    real_source = re.search(r"(?im)^\s*Source:\s*(https?://\S+)", message)
-
-    if real_source:
-        # Model provided a real URL — keep it as-is
-        return message
+    # ── Step 1: Find any "Source:" line in the response ───────────────
+    source_line_match = re.search(r"(?im)^\s*Source:.*$", message)
     
-    # ── Check for fake/placeholder source lines ─────────────────────
-    # LLMs sometimes output: "Source: [Investopedia URL for stocks]"
-    # These need to be replaced with actual URLs from our canonical dictionary
-    fake_source = re.search(r"(?im)^\s*Source:.*$", message)
-    if fake_source:
-        # Strip the placeholder source line
-        message = message[:fake_source.start()].rstrip()
+    if source_line_match:
+        source_line = source_line_match.group()
+        
+        # Extract ALL real URLs from the source line
+        # Handles both plain URLs and markdown links like [text](url)
+        urls_found = re.findall(r"https?://[^\s\)\]]+", source_line)
+        
+        # Strip the old source line from the message
+        content = message[:source_line_match.start()].rstrip()
+        
+        if urls_found:
+            # Use the FIRST real URL found (it's usually the most relevant)
+            clean_url = urls_found[0].rstrip(")")  # Remove trailing ) from markdown
+            return content + f"\nSource: {clean_url}"
+        else:
+            # Source line exists but has NO real URLs (e.g., "[Investopedia URL for stocks]")
+            # Fall through to append our canonical URL below
+            message = content
     
-    # ── Smarter check: Should we force a source? ────────────────────
-    # Don't force a source if:
-    # 1. The message is very short (< 100 chars)
-    # 2. The query is just a greeting or help request
-    # 3. The message doesn't have bullet points
-    
+    # ── Step 2: Decide whether to append our own source ───────────────
     q = query.lower().strip()
     words = q.split()
     
@@ -139,6 +141,7 @@ def ensure_source_in_response(message: str, query: str) -> str:
     if is_pure_greeting:
         return message
 
+    # Append our canonical source URL for financial answers
     if "•" in message and len(message) > 100:
         source_url = get_safe_source_link(query)
         return message + f"\nSource: {source_url}"
