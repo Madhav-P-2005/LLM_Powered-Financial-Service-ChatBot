@@ -101,9 +101,10 @@ const ChatPage = () => {
       const botMessage = { text: response.data.response, sender: "bot" };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
+      const errorMessage = error.response?.data?.error || "Error: Could not connect to backend.";
       setMessages((prev) => [
         ...prev,
-        { text: "Error: Could not connect to backend.", sender: "bot" },
+        { text: `Error: ${errorMessage}`, sender: "bot" },
       ]);
     } finally {
       setIsLoading(false);
