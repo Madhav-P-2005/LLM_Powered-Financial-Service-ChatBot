@@ -104,25 +104,27 @@ def ensure_source_in_response(message: str, query: str) -> str:
     Returns:
         The response text with a guaranteed Source line.
     """
-    # ── Step 1: Find any "Source:" line in the response ───────────────
-    source_line_match = re.search(r"(?im)^\s*Source:.*$", message)
+    # ── Step 1: Find "Source:" ANYWHERE in the response ───────────────
+    # The LLM sometimes puts Source: at the start of a new line,
+    # sometimes inline at the end of the last sentence — catch both
+    source_match = re.search(r"Source:\s*(.+?)$", message, re.IGNORECASE | re.MULTILINE)
     
-    if source_line_match:
-        source_line = source_line_match.group()
+    if source_match:
+        source_text = source_match.group(1)
         
-        # Extract ALL real URLs from the source line
-        # Handles both plain URLs and markdown links like [text](url)
-        urls_found = re.findall(r"https?://[^\s\)\]]+", source_line)
+        # Extract ALL real URLs from the source text
+        # Handles: plain URLs, markdown [text](url), and mixed formats
+        urls_found = re.findall(r"https?://[^\s\)\]\>]+", source_text)
         
-        # Strip the old source line from the message
-        content = message[:source_line_match.start()].rstrip()
+        # Strip everything from "Source:" onwards
+        content = message[:source_match.start()].rstrip()
         
         if urls_found:
-            # Use the FIRST real URL found (it's usually the most relevant)
-            clean_url = urls_found[0].rstrip(")")  # Remove trailing ) from markdown
+            # Use the FIRST real URL found (most relevant to the question)
+            clean_url = urls_found[0].rstrip(")")
             return content + f"\nSource: {clean_url}"
         else:
-            # Source line exists but has NO real URLs (e.g., "[Investopedia URL for stocks]")
+            # Source text has NO real URLs (placeholder like "[Investopedia URL for stocks]")
             # Fall through to append our canonical URL below
             message = content
     
@@ -141,8 +143,9 @@ def ensure_source_in_response(message: str, query: str) -> str:
     if is_pure_greeting:
         return message
 
-    # Append our canonical source URL for financial answers
-    if "•" in message and len(message) > 100:
+    # Append our canonical source URL for all financial answers
+    # (works for both bullet-point and paragraph-style responses)
+    if len(message) > 100:
         source_url = get_safe_source_link(query)
         return message + f"\nSource: {source_url}"
     
